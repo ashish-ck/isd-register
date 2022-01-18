@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: opsmx-isd-register
+  namespace: ns-isd-register
+spec:
+  ports:
+  - port: 8010
+    protocol: TCP
+    targetPort: 8010
+  selector:
+    app: opsmx-isd-register-app
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opsmx-isd-register-app-deployment
+  namespace: ns-isd-register
+spec:
+  selector:
+    matchLabels:
+      app: opsmx-isd-register-app
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: opsmx-isd-register-app
+    spec:
+      containers:
+      - name: opsmx-isd-register-app
+        image: ashishck/opsmx-isd-register
+        ports:
+        - containerPort: 8010
+          name: server
+      imagePullSecrets:
+        - name: regcred
+        
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: opsmx-isd-register-app-ingress
+  namespace: default
+spec:
+  rules:
+  - host: opsmx-isd-register.org
+    http:
+      paths:
+      - backend:
+          serviceName: opsmx-isd-register
+          servicePort: 8010
+        path: /register
