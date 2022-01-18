@@ -1,0 +1,6 @@
+automation:
+  webhook:
+    url: https://spin-gate.canis.isd.opsmx.org/webhooks/webhook/ondemandsaas
+
+redirect:
+  url: http://localhost/success.html
