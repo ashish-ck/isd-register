@@ -1,4 +1,4 @@
-#MAINTAINER OpsMx
+MAINTAINER OpsMx
 
 FROM openjdk:11
 
