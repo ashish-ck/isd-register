@@ -2,6 +2,8 @@ MAINTAINER OpsMx
 
 FROM openjdk:11
 
+FROM postgres:9.4
+
 VOLUME /tmp
 
 ARG JAR_FILE

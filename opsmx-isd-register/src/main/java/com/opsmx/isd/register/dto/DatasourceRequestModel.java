@@ -8,7 +8,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class DatasourceRequestModel {
-    private String user;
     private String firstName;
     private String lastName;
     private String companyName;

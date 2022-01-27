@@ -9,9 +9,25 @@ redirect:
 spring:
   application:
     name: opsmx-isd-register-service
-  jpa:
-    hibernate:
-      ddl-auto: update
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    hikari:
+#      connectionTimeout: 10000
+#      idleTimeout: 300000
+#      maxLifetime: 600000
+#      minimumIdle: 10
+#      maximumPoolSize: 20
+#    test-on-borrow: true
+#    testWhileIdle: true
+#    url: jdbc:postgresql://localhost:5432/isdregisterdb
+#    username: postgres
+#    password: networks123
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    propertieshibernate:
+#      dialect: org.hibernate.dialect.PostgreSQLDialect
+#    show-sql: false
 logging:
   file:
     name: /home/ashish/spring-logging/application-backend-dev.log
@@ -37,4 +53,5 @@ springdoc:
     path: /docs
   swagger-ui:
     path: /swagger
-    
+
+
