@@ -8,10 +8,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class DatasourceRequestModel {
-    private String user;
-    private String firstName;
-    private String lastName;
-    private String companyName;
-    private String phone;
-    private String email;
+    private String FirstName;
+    private String LastName;
+    private String CompanyName;
+    private String ContactNumber;
+    private String BusinessEmail;
 }

@@ -30,8 +30,8 @@ public class AccountSetupServiceImpl implements AccountSetupService {
         String url = automationWebhookURL;
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         Map<String,String> uriVariables = new HashMap<>();
-        uriVariables.put("user", datasourceRequestModel.getUser());
-        uriVariables.put("email", datasourceRequestModel.getEmail());
+        uriVariables.put("user", datasourceRequestModel.getBusinessEmail());
+        uriVariables.put("email", datasourceRequestModel.getBusinessEmail());
         String data = "";
         HttpEntity<Object> httpEntity= new HttpEntity<>(data, headers);
         try {
