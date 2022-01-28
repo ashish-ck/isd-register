@@ -1,7 +1,5 @@
-MAINTAINER OpsMx
-
 FROM openjdk:11
-
+c
 FROM postgres:9.4
 
 VOLUME /tmp

@@ -38,7 +38,13 @@
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/greetings', function (greeting) {
                     alert(greeting);
-                    location.assign("http://opsmx.freshdesk.com/support/login");
+                    if(greeting.from == "ashish.singh@opsmx.io"){
+                        if(greeting.text == "success"){
+                            location.assign("http://opsmx.freshdesk.com/support/login");
+                        }else {
+                            location.assign("http://www.error.com");
+                        }
+                    }
                 });
             });
         }
