@@ -11,6 +11,6 @@ public class DatasourceRequestModel {
     private String firstName;
     private String lastName;
     private String companyName;
-    private String phone;
-    private String email;
+    private String contactNumber;
+    private String businessEmail;
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public class ScheduledPushMessages {
@@ -17,10 +18,9 @@ public class ScheduledPushMessages {
         this.simpMessagingTemplate = simpMessagingTemplate;
     }
 
-    @Scheduled(fixedRate = 5000)
-    public void sendMessage() {
-        final String time = new SimpleDateFormat("HH:mm").format(new Date());
-        simpMessagingTemplate.convertAndSend("/topic/greetings", new HelloMessage("Chuck Norris"));
-    }
-
+//    @Scheduled(fixedRate = 5000)
+//    public void sendMessage() {
+//        final String time = new SimpleDateFormat("HH:mm").format(new Date());
+//        simpMessagingTemplate.convertAndSend("/topic/greetings", new HelloMessage(UUID.randomUUID().toString()));
+//    }
 }

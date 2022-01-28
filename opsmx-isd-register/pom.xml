@@ -7,7 +7,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.2.7.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath />
 	</parent>
 	<groupId>com.opsmx.isd.register</groupId>
 	<artifactId>opsmx-isd-register</artifactId>
@@ -20,7 +20,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
-		<!-- <wavefront.version>2.0.0-RC1</wavefront.version>-->
 		<docker.image.prefix>ashishck</docker.image.prefix>
 		<sleuth.version>2.2.7.RELEASE</sleuth.version>
 		<openapi.version>1.2.32</openapi.version>
@@ -46,12 +45,6 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>com.wavefront</groupId>
-			<artifactId>wavefront-spring-boot-starter</artifactId>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-rest</artifactId>
@@ -74,14 +67,11 @@
 			<artifactId>springdoc-openapi-ui</artifactId>
 			<version>${openapi.version}</version>
 		</dependency>
-		<!-- hot swapping, disable cache for template, enable live reload -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
 		</dependency>
-
-		<!-- Sleuth log tracing -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
@@ -95,27 +85,15 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-test</artifactId>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
-<!--			<version>2.6.3</version>-->
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework</groupId>-->
-<!--			<artifactId>spring-messaging</artifactId>-->
-<!--			<version>5.3.15</version>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>io.projectreactor</groupId>
 			<artifactId>reactor-core</artifactId>
@@ -125,55 +103,40 @@
 			<artifactId>javafaker</artifactId>
 			<version>1.0.2</version>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.security</groupId>-->
-<!--			<artifactId>spring-security-messaging</artifactId>-->
-<!--			<version>5.6.1</version>-->
-<!--		</dependency>-->
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
 			<version>5.6.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>webjars-locator-core</artifactId>
 			<version>0.48</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>sockjs-client</artifactId>
 			<version>1.5.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>stomp-websocket</artifactId>
 			<version>2.3.4</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 			<version>5.1.3</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.webjars.bower</groupId>
 			<artifactId>jquery</artifactId>
 			<version>3.6.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -186,19 +149,6 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-<!-- 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.wavefront</groupId>
-				<artifactId>wavefront-spring-boot-bom</artifactId>
-				<version>${wavefront.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
--->
 	<build>
 		<plugins>
 			<plugin>
@@ -238,7 +188,6 @@
 	</repositories>
 
 	<pluginRepositories>
-
 		<pluginRepository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>
@@ -256,6 +205,5 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
-
 </project>
 

@@ -2,9 +2,6 @@ package com.opsmx.isd.register.dto;
 
 import java.security.Principal;
 
-/**
- * Custom Principal class which is used for anonymous user sessions in Websocket connection
- */
 public class StompPrincipal implements Principal {
     private String name;
 

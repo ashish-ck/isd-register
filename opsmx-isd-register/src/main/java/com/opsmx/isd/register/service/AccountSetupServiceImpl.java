@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service("AccountSetupService-v1")
 @Slf4j
@@ -30,22 +31,25 @@ public class AccountSetupServiceImpl implements AccountSetupService {
         String url = automationWebhookURL;
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
         Map<String,String> uriVariables = new HashMap<>();
-        uriVariables.put("user", datasourceRequestModel.getEmail());
-        uriVariables.put("email", datasourceRequestModel.getEmail());
+        uriVariables.put("user", datasourceRequestModel.getBusinessEmail());
+        uriVariables.put("email", datasourceRequestModel.getBusinessEmail());
         String data = "";
         HttpEntity<Object> httpEntity= new HttpEntity<>(data, headers);
+        DatasourceResponseModel datasourceResponseModel = new DatasourceResponseModel();
+        datasourceResponseModel.setEventProcessed(false);
+        datasourceResponseModel.setEventId(UUID.randomUUID().toString());
         try {
             ResponseEntity<DatasourceResponseModel> responseEntity = this.restTemplate.postForEntity(url,
                     httpEntity, DatasourceResponseModel.class, uriVariables);
             if(responseEntity != null) {
                 try {
                     DatasourceResponseModel responseModel = responseEntity.getBody();
-                    if(responseModel.getEventProcessed()){
+                    if(responseModel != null && responseModel.getEventProcessed()){
                         log.info("Event trigger ISD register success, event ID = {}", responseModel.getEventId());
+                        return responseModel;
                     } else {
-                        throw new RuntimeException("Error triggering ISD register event");
+                        return datasourceResponseModel;
                     }
-                    return responseModel;
                 } catch (Exception e) {
                     log.error("Exception in triggering ISD register event {}",e.getMessage());
                 }
@@ -55,7 +59,7 @@ public class AccountSetupServiceImpl implements AccountSetupService {
         }catch (Exception e){
             log.error("Exception in ISD register event triggering {}", e.getMessage());
         }
-        return null;
+        return datasourceResponseModel;
     }
 }
 

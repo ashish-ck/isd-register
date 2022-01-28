@@ -13,7 +13,6 @@ import javax.validation.constraints.NotBlank;
 @Entity
 @Data
 @ToString
-//@AllArgsConstructor
 @NoArgsConstructor
 public class User {
     @Id
@@ -30,17 +29,17 @@ public class User {
     private String companyName;
 
     @NotBlank(message = "Phone is mandatory")
-    private String phone;
+    private String contactNumber;
 
     @NotBlank(message = "Email is mandatory")
-    private String email;
+    private String businessEmail;
 
-    public User(String firstName, String lastName, String companyName, String phone, String email) {
+    public User(String firstName, String lastName, String companyName, String contactNumber, String businessEmail) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.companyName = companyName;
-        this.phone = phone;
-        this.email = email;
+        this.contactNumber = contactNumber;
+        this.businessEmail = businessEmail;
     }
 }
 

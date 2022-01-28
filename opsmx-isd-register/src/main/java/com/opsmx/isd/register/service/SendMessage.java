@@ -5,4 +5,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SendMessage {
     void sendMessage(String message);
+    void sendMessageObject(Object message);
 }

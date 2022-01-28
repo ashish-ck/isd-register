@@ -1,27 +1,14 @@
 package com.opsmx.isd.register.dto;
 
-public class OutputMessage {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class OutputMessage {
     private String from;
     private String text;
     private String time;
-
-    public OutputMessage(final String from, final String text, final String time) {
-
-        this.from = from;
-        this.text = text;
-        this.time = time;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public String getFrom() {
-        return from;
-    }
 }
