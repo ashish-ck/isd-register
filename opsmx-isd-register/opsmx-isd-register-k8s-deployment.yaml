@@ -32,14 +32,14 @@ spec:
         app: opsmx-isd-register-service-app
     spec:
       containers:
-      - name: opsmx-isd-register-service-app
-        image: ashishck/opsmx-isd-register
-        ports:
-        - containerPort: 8010
-          name: server
+        - name: opsmx-isd-register-service-app
+          image: ashishck/opsmx-isd-register:v3
+          ports:
+            - containerPort: 8010
+              name: server
       imagePullSecrets:
         - name: regcred
-        
+
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -48,8 +48,8 @@ metadata:
   namespace: ns-isd-register
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-read-timeout: 3600
-    nginx.ingress.kubernetes.io/proxy-send-timeout: 3600
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
 spec:
   rules:
     - http:
@@ -62,3 +62,32 @@ spec:
             backend:
               serviceName: server-opsmx-isd-register-service
               servicePort: 8010
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  annotations:
+#    acme.cert-manager.io/http01-edit-in-place: 'true'
+#    cert-manager.io/cluster-issuer: letsencrypt-saas-cluster-issuer
+#    cert-manager.io/issue-temporary-certificate: 'true'
+#    kubernetes.io/ingress.class: nginx
+#    kubernetes.io/tls-acme: 'true'
+#  name: register
+#  namespace:  ns-isd-register
+#spec:
+#  rules:
+#    - host: opsmx-register.isd.opsmx.org
+#      http:
+#        paths:
+#          - path: /webhookTrigger
+#            backend:
+#              serviceName: client-opsmx-isd-register-service
+#              servicePort: 8010
+#          - path: /opsmx-spinnaker-account
+#            backend:
+#              serviceName: server-opsmx-isd-register-service
+#              servicePort: 8010
+#  tls:
+#    - hosts:
+#        - opsmx-register.isd.opsmx.org
+#      secretName: reg-authtls

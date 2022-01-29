@@ -53,7 +53,11 @@ public class AccountManagerController {
         CompletableFuture.supplyAsync(() -> {
             atomicReference.set(accountSetupService.setup(dataSourceRequestModel));
             return atomicReference;
-        }).thenRun(() -> {
+        }).orTimeout(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS).whenComplete((result, exception) -> {
+            if(exception != null) {
+                sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), exception.getMessage()));
+                return;
+            }
             DatasourceResponseModel responseModel = atomicReference.get();
             if(responseModel != null && responseModel.getEventProcessed()){
                 log.info("Building spinnaker setup for user {} ", dataSourceRequestModel.getBusinessEmail());
@@ -65,8 +69,6 @@ public class AccountManagerController {
                 // send message to redirect to error page.
                 sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), "failure"));
             }
-        }).orTimeout(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS).thenRun(() -> {
-            sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), "failure"));
         });
         SaasTrialResponseModel saasTrialResponseModel = new SaasTrialResponseModel();
         saasTrialResponseModel.setEventProcessed(true);
