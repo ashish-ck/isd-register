@@ -60,11 +60,11 @@ public class UserController {
 
     @RequestMapping(value = "/adduser", method = RequestMethod.POST)
     public RedirectView save(@ModelAttribute("user") DatasourceRequestModel user, RedirectAttributes redirectAttrs) {
-        redirectAttrs.addFlashAttribute("FirstName", user.getFirstName());
-        redirectAttrs.addFlashAttribute("LastName", user.getLastName());
-        redirectAttrs.addFlashAttribute("CompanyName", user.getCompanyName());
-        redirectAttrs.addFlashAttribute("BusinessEmail", user.getBusinessEmail());
-        redirectAttrs.addFlashAttribute("ContactNumber", user.getContactNumber());
+        redirectAttrs.addFlashAttribute("firstName", user.getFirstName());
+        redirectAttrs.addFlashAttribute("lastName", user.getLastName());
+        redirectAttrs.addFlashAttribute("companyName", user.getCompanyName());
+        redirectAttrs.addFlashAttribute("businessEmail", user.getBusinessEmail());
+        redirectAttrs.addFlashAttribute("contactNumber", user.getContactNumber());
         userRepository.save(Util.toUser(user));
         AtomicReference<Boolean> isSpinnakerSetupComplete = new AtomicReference<>(false);
         AtomicReference<DatasourceResponseModel> atomicReference = new AtomicReference<>();
