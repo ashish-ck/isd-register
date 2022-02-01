@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages={"com.opsmx.isd.register"})
 @EnableJpaRepositories(basePackages="com.opsmx.isd.register.repositories")
 @EnableTransactionManagement
-@EntityScan(basePackages="com.opsmx.isd.register")
+@EntityScan(basePackages="com.opsmx.isd.register.entities")
 @EnableScheduling
 public class ISDRegisterApplication {
 

@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RestController
 @Slf4j
 public class AccountManagerController {
+
     @Autowired
 	private AccountSetupService accountSetupService;
 
@@ -46,6 +47,9 @@ public class AccountManagerController {
     public ResponseEntity<SaasTrialResponseModel> webhookTrigger(@RequestBody DatasourceRequestModel dataSourceRequestModel,
                                                             HttpServletRequest request) {
         log.info(dataSourceRequestModel.toString());
+        if(!Util.rateLimit(request)){
+            return new ResponseEntity("You have exceeded the 10 requests in 1 minute limit!", HttpStatus.TOO_MANY_REQUESTS);
+        }
         userRepository.save(Util.toUser(dataSourceRequestModel));
         log.info("User data saved ");
         AtomicReference<Boolean> isSpinnakerSetupComplete = new AtomicReference<>(false);

@@ -50,7 +50,6 @@ public class UserController {
 
     @RequestMapping(value="/index", method = RequestMethod.GET)
     public String showUserList(Model model, RedirectAttributes redirectAttrs, HttpServletRequest request){
-        model.addAttribute("email", (String)model.asMap().get("email"));
         return "index";
     }
 
@@ -61,31 +60,33 @@ public class UserController {
 
     @RequestMapping(value = "/adduser", method = RequestMethod.POST)
     public RedirectView save(@ModelAttribute("user") DatasourceRequestModel user, RedirectAttributes redirectAttrs) {
-        redirectAttrs.addFlashAttribute("firstName", user.getFirstName());
-        redirectAttrs.addFlashAttribute("lastName", user.getLastName());
-        redirectAttrs.addFlashAttribute("companyName", user.getCompanyName());
-        redirectAttrs.addFlashAttribute("businessEmail", user.getBusinessEmail());
-        redirectAttrs.addFlashAttribute("contactNumber", user.getContactNumber());
+        redirectAttrs.addFlashAttribute("FirstName", user.getFirstName());
+        redirectAttrs.addFlashAttribute("LastName", user.getLastName());
+        redirectAttrs.addFlashAttribute("CompanyName", user.getCompanyName());
+        redirectAttrs.addFlashAttribute("BusinessEmail", user.getBusinessEmail());
+        redirectAttrs.addFlashAttribute("ContactNumber", user.getContactNumber());
         userRepository.save(Util.toUser(user));
         AtomicReference<Boolean> isSpinnakerSetupComplete = new AtomicReference<>(false);
         AtomicReference<DatasourceResponseModel> atomicReference = new AtomicReference<>();
         CompletableFuture.supplyAsync(() -> {
             atomicReference.set(accountSetupService.setup(user));
             return atomicReference;
-        }).thenRun(() -> {
+        }).orTimeout(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS).whenComplete((result, exception) -> {
+            if(exception != null) {
+                sendMessage.sendMessageObject(new Message(user.getBusinessEmail(), exception.getMessage()));
+                return;
+            }
             DatasourceResponseModel responseModel = atomicReference.get();
             if(responseModel != null && responseModel.getEventProcessed()){
                 log.info("Building spinnaker setup for user {} ", user.getBusinessEmail());
                 isSpinnakerSetupComplete.set(true);
                 // send message to redirect to login page.
-                 sendMessage.sendMessageObject(new Message(user.getBusinessEmail(), "success"));
+                sendMessage.sendMessageObject(new Message(user.getBusinessEmail(), "success"));
             }else {
-                log.info("Error building spinnaker ");
+                log.info("Error building spinnaker for user {}", user.getBusinessEmail());
                 // send message to redirect to error page.
-                 sendMessage.sendMessageObject(new Message(user.getBusinessEmail(), "failure"));
+                sendMessage.sendMessageObject(new Message(user.getBusinessEmail(), "failure"));
             }
-        }).orTimeout(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS).thenRun(() -> {
-             sendMessage.sendMessageObject(new Message(user.getBusinessEmail(), "failure"));
         });
         RedirectView redirectView = new RedirectView();
         redirectView.setContextRelative(true);

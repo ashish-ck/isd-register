@@ -14,11 +14,12 @@
         <script type="text/javascript">
             var stompClient = null;
             function connect() {
-                var socket = new SockJS(window.location.protocol + '//' + window.location.hostname + ':8010/opsmx-spinnaker-account');
+                // var socket = new SockJS(window.location.protocol + '//' + window.location.hostname + ':8010/opsmx-spinnaker-account');
+                var socket = new SockJS('https://opsmx-register.isd.opsmx.org/opsmx-spinnaker-account');
                 stompClient = Stomp.over(socket);
                 stompClient.connect({}, function (frame) {
                     stompClient.subscribe('/topic/greetings', function (greeting) {
-                        console.log(greeting);
+                        alert(greeting);
                         if(greeting.from == "ashish.singh@opsmx.io"){
                             if(greeting.text == "success"){
                                 // success case : progress page can now forward user to login page

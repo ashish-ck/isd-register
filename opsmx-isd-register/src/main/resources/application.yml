@@ -4,30 +4,30 @@ automation:
 
 redirect:
   url: http://localhost/success.html
-  
-  
+
 spring:
   application:
     name: opsmx-isd-register-service
-#  datasource:
-#    driver-class-name: org.postgresql.Driver
-#    hikari:
-#      connectionTimeout: 10000
-#      idleTimeout: 300000
-#      maxLifetime: 600000
-#      minimumIdle: 10
-#      maximumPoolSize: 20
-#    test-on-borrow: true
-#    testWhileIdle: true
-#    url: jdbc:postgresql://localhost:5432/isdregisterdb
-#    username: postgres
-#    password: networks123
-#  jpa:
-#    hibernate:
-#      ddl-auto: update
-#    propertieshibernate:
-#      dialect: org.hibernate.dialect.PostgreSQLDialect
-#    show-sql: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 10000
+      idleTimeout: 300000
+      maxLifetime: 600000
+      minimumIdle: 10
+      maximumPoolSize: 20
+    test-on-borrow: true
+    testWhileIdle: true
+    url: jdbc:postgresql://localhost:5432/isdregisterdb?useSSL=false
+    username: postgres
+    password: networks123
+  jpa:
+    hibernate:
+      ddl-auto: create
+    propertieshibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    generate-ddl: true
 logging:
   file:
     name: /home/ashish/spring-logging/application-backend-dev.log
@@ -54,4 +54,10 @@ springdoc:
   swagger-ui:
     path: /swagger
 
+bucket4j:
+  filters[0]:
+    metrics:
+      tags[0]:
+        key: IP
+        expression: getRemoteAddr()
 
