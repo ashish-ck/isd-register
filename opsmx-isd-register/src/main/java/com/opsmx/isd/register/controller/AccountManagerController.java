@@ -42,6 +42,7 @@ public class AccountManagerController {
         this.userRepository = userRepository;
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping(value = "/webhookTrigger", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SaasTrialResponseModel> webhookTrigger(@RequestBody DatasourceRequestModel dataSourceRequestModel,
