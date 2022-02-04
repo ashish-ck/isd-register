@@ -41,7 +41,7 @@ public class UserController {
     @Autowired
     private AccountSetupService accountSetupService;
 
-    private final Long TIMEOUT_IN_SECONDS = 120L;
+    private final Long TIMEOUT_IN_SECONDS = 180L;
 
     @Autowired
     public UserController(UserRepository userRepository) {

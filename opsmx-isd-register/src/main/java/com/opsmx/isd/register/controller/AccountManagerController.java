@@ -15,6 +15,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AccountManagerController {
 
     @Autowired
-	private AccountSetupService accountSetupService;
+    private AccountSetupService accountSetupService;
 
     @Value("${redirect.url:#{null}}")
     private String redirectURL;
@@ -35,7 +36,7 @@ public class AccountManagerController {
     @Autowired
     private SendMessage sendMessage;
 
-    private final Long TIMEOUT_IN_SECONDS = 120L;
+    private final Long TIMEOUT_IN_SECONDS = 180L;
 
     @Autowired
     public AccountManagerController(UserRepository userRepository) {
@@ -45,39 +46,47 @@ public class AccountManagerController {
     @CrossOrigin(origins = "*")
     @PostMapping(value = "/webhookTrigger", consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SaasTrialResponseModel> webhookTrigger(@RequestBody DatasourceRequestModel dataSourceRequestModel,
-                                                            HttpServletRequest request) {
-        log.info(dataSourceRequestModel.toString());
-        if(!Util.rateLimit(request)){
-            return new ResponseEntity("You have exceeded the 10 requests in 1 minute limit!", HttpStatus.TOO_MANY_REQUESTS);
+    public ResponseEntity<SaasTrialResponseModel> webhookTrigger(@Valid @RequestBody DatasourceRequestModel
+                                                                             dataSourceRequestModel,
+                                                                 HttpServletRequest request) {
+        try {
+            log.info(dataSourceRequestModel.toString());
+            if(!Util.rateLimit(request)){
+                return new ResponseEntity("You have exceeded the 10 requests in 1 minute limit!", HttpStatus.TOO_MANY_REQUESTS);
+            }
+            userRepository.save(Util.toUser(dataSourceRequestModel));
+            log.info("User data saved ");
+            AtomicReference<Boolean> isSpinnakerSetupComplete = new AtomicReference<>(false);
+            AtomicReference<DatasourceResponseModel> atomicReference = new AtomicReference<>();
+            CompletableFuture.supplyAsync(() -> {
+                atomicReference.set(accountSetupService.setup(dataSourceRequestModel));
+                return atomicReference;
+            }).orTimeout(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS).whenComplete((result, exception) -> {
+                if(exception != null) {
+                    sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), exception.getMessage()));
+                    return;
+                }
+                DatasourceResponseModel responseModel = atomicReference.get();
+                if(responseModel != null && responseModel.getEventProcessed()){
+                    log.info("Building spinnaker setup for user {} ", dataSourceRequestModel.getBusinessEmail());
+                    isSpinnakerSetupComplete.set(true);
+                    // send message to redirect to login page.
+                    sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), "success"));
+                }else {
+                    log.info("Error building spinnaker for user {}", dataSourceRequestModel.getBusinessEmail());
+                    // send message to redirect to error page.
+                    sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), "failure"));
+                }
+            });
+            SaasTrialResponseModel saasTrialResponseModel = new SaasTrialResponseModel();
+            saasTrialResponseModel.setEventProcessed(true);
+            saasTrialResponseModel.setEventId(UUID.randomUUID().toString());
+            return new ResponseEntity<>(saasTrialResponseModel, HttpStatus.CREATED);
+        }catch (Exception e){
+            SaasTrialResponseModel saasTrialResponseModel = new SaasTrialResponseModel();
+            saasTrialResponseModel.setEventProcessed(false);
+            saasTrialResponseModel.setEventId(UUID.randomUUID().toString());
+            return new ResponseEntity<>(saasTrialResponseModel, HttpStatus.CONFLICT);
         }
-        userRepository.save(Util.toUser(dataSourceRequestModel));
-        log.info("User data saved ");
-        AtomicReference<Boolean> isSpinnakerSetupComplete = new AtomicReference<>(false);
-        AtomicReference<DatasourceResponseModel> atomicReference = new AtomicReference<>();
-        CompletableFuture.supplyAsync(() -> {
-            atomicReference.set(accountSetupService.setup(dataSourceRequestModel));
-            return atomicReference;
-        }).orTimeout(TIMEOUT_IN_SECONDS, TimeUnit.SECONDS).whenComplete((result, exception) -> {
-            if(exception != null) {
-                sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), exception.getMessage()));
-                return;
-            }
-            DatasourceResponseModel responseModel = atomicReference.get();
-            if(responseModel != null && responseModel.getEventProcessed()){
-                log.info("Building spinnaker setup for user {} ", dataSourceRequestModel.getBusinessEmail());
-                isSpinnakerSetupComplete.set(true);
-                // send message to redirect to login page.
-                sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), "success"));
-            }else {
-                log.info("Error building spinnaker for user {}", dataSourceRequestModel.getBusinessEmail());
-                // send message to redirect to error page.
-                sendMessage.sendMessageObject(new Message(dataSourceRequestModel.getBusinessEmail(), "failure"));
-            }
-        });
-        SaasTrialResponseModel saasTrialResponseModel = new SaasTrialResponseModel();
-        saasTrialResponseModel.setEventProcessed(true);
-        saasTrialResponseModel.setEventId(UUID.randomUUID().toString());
-        return new ResponseEntity<>(saasTrialResponseModel, HttpStatus.CREATED);
     }
 }
