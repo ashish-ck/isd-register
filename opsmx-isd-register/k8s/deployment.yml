@@ -1,0 +1,61 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: opsmx-isd-register-service
+  namespace: ns-isd-register
+  labels:
+    name: opsmx-isd-register-service
+spec:
+  ports:
+    - nodePort: 30163
+      port: 8010
+      targetPort: 8010
+      protocol: TCP
+  selector:
+    app: opsmx-isd-register-service
+  type: NodePort
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opsmx-isd-register-service
+  namespace: ns-isd-register
+spec:
+  selector:
+    matchLabels:
+      app: opsmx-isd-register-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: opsmx-isd-register-service
+    spec:
+      containers:
+        - name: opsmx-isd-register-service
+          image: ashishck/opsmx-isd-register:v5.5.8
+          ports:
+            - containerPort: 8010
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: host
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: name
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_password
+
+

@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: opsmx-isd-register-service
+  namespace: ns-isd-register
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /webhookTrigger
+            backend:
+              serviceName: client-opsmx-isd-register-service
+              servicePort: 8010
+          - path: /opsmx-spinnaker-account
+            backend:
+              serviceName: server-opsmx-isd-register-service
+              servicePort: 8010
