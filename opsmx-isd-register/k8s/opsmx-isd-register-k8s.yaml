@@ -1,19 +1,19 @@
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
   name: opsmx-isd-register-service
   namespace: ns-isd-register
+  labels:
+    name: opsmx-isd-register-service
 spec:
   ports:
-    - port: 8010
-      protocol: TCP
+    - nodePort: 30163
+      port: 8010
       targetPort: 8010
+      protocol: TCP
   selector:
     app: opsmx-isd-register-service
-  sessionAffinity: None
-  type: ClusterIP
-status:
-  loadBalancer: {}
+  type: NodePort
 
 ---
 apiVersion: apps/v1
@@ -36,9 +36,27 @@ spec:
           image: ashishck/opsmx-isd-register:v5.5.8
           ports:
             - containerPort: 8010
-              name: server
-      imagePullSecrets:
-        - name: regcred
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: host
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: name
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_password
 
 ---
 apiVersion: extensions/v1beta1
@@ -62,3 +80,4 @@ spec:
             backend:
               serviceName: server-opsmx-isd-register-service
               servicePort: 8010
+
