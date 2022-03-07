@@ -24,10 +24,10 @@ metadata:
   name: email-credentials
   namespace: ns-isd-register
 data:
-  email_user: opsmxsaastrialsheet@gmail.com
+  email_user: b3BzbXhzYWFzdHJpYWxzaGVldEBnbWFpbC5jb20K
   email_password: Q3JhY2toYXJkQDEyMwo=
-  email_to: vishal.patel@opsmx.io
-  email_cc: balaji@opsmx.com
+  email_to: dmlzaGFsLnBhdGVsQG9wc214LmlvCg==
+  email_cc: YmFsYWppQG9wc214LmNvbQo=
 
 ---
 apiVersion: v1
@@ -91,12 +91,12 @@ spec:
                   key: postgres_password
             - name: EMAIL_USER
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   name: email-credentials
                   key: email_user
             - name: EMAIL_PASS
               valueFrom:
-                configMapKeyRef:
+                secretKeyRef:
                   name: email-credentials
                   key: email_password
             - name: EMAIL_TO
@@ -222,3 +222,108 @@ spec:
           persistentVolumeClaim:
             claimName: postgres-pv-claim
 
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-conf
+  namespace: ns-isd-register
+data:
+  host: postgres
+  name: isdregisterdb
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres-credentials
+  namespace: ns-isd-register
+data:
+  postgres_user: cG9zdGdyZXM=
+  postgres_password: bmV0d29ya3MxMjM=
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ns-isd-register
+  labels:
+    app: postgres
+    tier: database
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+    tier: database
+  clusterIP: None
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  namespace: ns-isd-register
+  labels:
+    app: postgres
+    tier: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ns-isd-register
+  labels:
+    app: postgres
+    tier: database
+
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: database
+    spec:
+      containers:
+        - name: postgres
+          image: postgres
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: postgres_password
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: name
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-persistance-storage
+      volumes:
+        - name: postgres-persistance-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
