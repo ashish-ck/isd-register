@@ -89,7 +89,26 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: postgres_password
-
+            - name: EMAIL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: email-credentials
+                  key: email_user
+            - name: EMAIL_PASS
+              valueFrom:
+                configMapKeyRef:
+                  name: email-credentials
+                  key: email_password
+            - name: EMAIL_TO
+              valueFrom:
+                secretKeyRef:
+                  name: email-credentials
+                  key: email_to
+            - name: EMAIL_CC
+              valueFrom:
+                secretKeyRef:
+                  name: email-credentials
+                  key: email_cc
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
