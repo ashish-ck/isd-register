@@ -3,10 +3,13 @@ package com.opsmx.isd.register.entities;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.Date;
 
 @Entity
 @Data
@@ -34,6 +37,12 @@ public class User {
     @Column(unique = true)
     @NotBlank(message = "Email is mandatory")
     private String businessEmail;
+
+    @CreationTimestamp
+    private Date createdAt;
+
+    @UpdateTimestamp
+    private Date updatedAt;
 
     public User(String firstName, String lastName, String companyName, String contactNumber, String businessEmail) {
         this.firstName = firstName;

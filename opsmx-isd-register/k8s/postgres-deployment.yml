@@ -13,6 +13,7 @@ spec:
     app: postgres
     tier: database
   clusterIP: None
+
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

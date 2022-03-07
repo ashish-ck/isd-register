@@ -2,8 +2,11 @@ package com.opsmx.isd.register.service;
 
 import com.opsmx.isd.register.dto.DatasourceRequestModel;
 import com.opsmx.isd.register.dto.DatasourceResponseModel;
+import com.opsmx.isd.register.repositories.UserRepository;
+import com.opsmx.isd.register.util.Util;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,6 +30,16 @@ public class AccountSetupServiceImpl implements AccountSetupService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    @Transactional
+    public void store(DatasourceRequestModel datasourceRequestModel){
+        userRepository.save(Util.toUser(datasourceRequestModel));
+    }
+
+    @Override
     public DatasourceResponseModel setup(DatasourceRequestModel datasourceRequestModel){
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -4,19 +4,17 @@ import com.opsmx.isd.register.dto.DatasourceRequestModel;
 import com.opsmx.isd.register.dto.DatasourceResponseModel;
 import com.opsmx.isd.register.dto.Message;
 import com.opsmx.isd.register.dto.SaasTrialResponseModel;
-import com.opsmx.isd.register.repositories.UserRepository;
 import com.opsmx.isd.register.service.AccountSetupService;
 import com.opsmx.isd.register.service.SendMessage;
 import com.opsmx.isd.register.util.Util;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,20 +26,10 @@ public class AccountManagerController {
     @Autowired
     private AccountSetupService accountSetupService;
 
-    @Value("${redirect.url:#{null}}")
-    private String redirectURL;
-
-    private final UserRepository userRepository;
-
     @Autowired
     private SendMessage sendMessage;
 
     private final Long TIMEOUT_IN_SECONDS = 180L;
-
-    @Autowired
-    public AccountManagerController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @CrossOrigin(origins = "*")
     @PostMapping(value = "/webhookTrigger", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -52,9 +40,10 @@ public class AccountManagerController {
         try {
             log.info(dataSourceRequestModel.toString());
             if(!Util.rateLimit(request)){
-                return new ResponseEntity("You have exceeded the 10 requests in 1 minute limit!", HttpStatus.TOO_MANY_REQUESTS);
+                return new ResponseEntity("You have exceeded the 10 requests in 1 minute limit!",
+                        HttpStatus.TOO_MANY_REQUESTS);
             }
-            userRepository.save(Util.toUser(dataSourceRequestModel));
+            accountSetupService.store(dataSourceRequestModel);
             log.info("User data saved ");
             AtomicReference<Boolean> isSpinnakerSetupComplete = new AtomicReference<>(false);
             AtomicReference<DatasourceResponseModel> atomicReference = new AtomicReference<>();
