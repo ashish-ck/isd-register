@@ -57,7 +57,7 @@ spec:
   selector:
     matchLabels:
       app: opsmx-isd-register-service
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
