@@ -17,9 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service("AccountSetupService-v1")
 @Slf4j
@@ -36,7 +34,17 @@ public class AccountSetupServiceImpl implements AccountSetupService {
     @Override
     @Transactional
     public void store(DatasourceRequestModel datasourceRequestModel){
-        userRepository.save(Util.toUser(datasourceRequestModel));
+        String emailCheck = datasourceRequestModel.getBusinessEmail();
+        try {
+            Boolean val = userRepository.existsByBusinessEmail(emailCheck);
+            if (!val) {
+                userRepository.save(Util.toUser(datasourceRequestModel));
+            } else {
+                userRepository.findByBusinessEmail(emailCheck);
+            }
+        }catch (Exception e){
+            log.info("ERROR occured during populating data : ", e);
+        }
     }
 
     @Override

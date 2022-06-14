@@ -11,4 +11,5 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByBusinessEmail(String businessEmail);
     List<User> findAllByCreatedAtBetween(Date createdAtStart, Date createdAtEnd);
+    boolean existsByBusinessEmail(String businessEmail);
 }
